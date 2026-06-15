@@ -1,0 +1,95 @@
+---
+import { ClientRouter } from "astro:transitions";
+import TVEffects from "../components/TVEffects.astro";
+import "../styles/global.css";
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = "Martin Teo | software engineer",
+  description = "Co-founder & full-stack engineer based in Singapore.",
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+
+    <link
+      rel="preload"
+      href="/assets/fonts/VCROSDMono.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin="anonymous"
+    />
+    <link rel="preload" as="image" href="/assets/images/static.gif" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+
+    <title>{title}</title>
+    <ClientRouter />
+  </head>
+  <body>
+    <div class="tv js-tv">
+      <div class="tv-screen js-screen">
+        <TVEffects />
+        <div class="tv-content">
+          <a class="skip-link" href="#content">Skip to content</a>
+          <div class="page-container glitchy-text">
+            <slot />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Reveal the screen once, after the power-on animation finishes.
+      const screen = document.querySelector(".js-screen");
+      screen?.addEventListener(
+        "animationend",
+        () => {
+          if (!document.body.hasAttribute("data-tv-on")) {
+            document.body.setAttribute("data-tv-on", "");
+          }
+        },
+        { once: true }
+      );
+    </script>
+
+    <style>
+      .tv {
+        position: relative;
+        background-color: #000;
+        overflow: hidden;
+        margin: 0 auto;
+        transform-origin: center 10%;
+      }
+
+      .tv-content {
+        position: absolute;
+        inset: 0;
+        z-index: var(--layer-content);
+        overflow: hidden auto;
+        background-color: #0006;
+      }
+
+      .skip-link {
+        position: absolute;
+        z-index: var(--layer-top);
+        top: 0;
+        left: 0;
+      }
+      .skip-link:not(:focus) {
+        transform: translateX(-100%);
+      }
+    </style>
+  </body>
+</html>

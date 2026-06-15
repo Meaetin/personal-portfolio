@@ -1,36 +1,70 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Portfolio
 
-## Getting Started
+An interactive, terminal-style personal portfolio with a CRT / VCR aesthetic —
+scanlines, chromatic-aberration text, animated static, and a power-on
+animation. Visitors explore my profile, projects, and contact details by typing
+commands (or clicking chips) into an in-page terminal.
 
-First, run the development server:
+Built with [Astro](https://astro.build) for static output and a single
+[Svelte](https://svelte.dev) island for the interactive terminal.
+
+## Tech stack
+
+- **Astro 5** — static site, View Transitions via `<ClientRouter />`
+- **Svelte 5** — the interactive `Terminal` (hydrated with `client:only`)
+- **Native CSS** — custom properties + nesting, no preprocessor
+- **TypeScript** — strict mode
+
+## Getting started
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev        # local dev server at http://localhost:4321
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Scripts
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Command           | Description                              |
+| ----------------- | ---------------------------------------- |
+| `npm run dev`     | Start the dev server                     |
+| `npm run build`   | Build the static site to `dist/`         |
+| `npm run preview` | Preview the production build locally     |
+| `npm run astro`   | Run Astro CLI commands                   |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Project structure
 
-## Learn More
+```
+src/
+  components/
+    Terminal.svelte    # interactive terminal island
+    TVEffects.astro    # CRT overlays (scanlines, static, vignette)
+  layouts/
+    TVLayout.astro     # TV chrome + power-on animation
+  lib/
+    commands.ts        # command registry + all section content (edit copy here)
+  pages/
+    index.astro        # entry page
+  styles/
+    global.css         # design tokens + base styles
+public/
+  assets/              # fonts, images, resume
+```
 
-To learn more about Next.js, take a look at the following resources:
+## Editing content
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+All terminal copy — profile, projects, experience, contact links — lives in
+`src/lib/commands.ts`. Section text and the command registry are defined there;
+no UI changes are needed to update what the terminal prints.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Terminal commands
 
-## Deploy on Vercel
+| Command | Description                                      |
+| ------- | ------------------------------------------------ |
+| `ls`    | List sections, or print one with `ls <section>`  |
+| `help`  | Show available commands                          |
+| `clear` | Clear the screen                                 |
+| `whoami`| Print the current user                           |
+| `date`  | Print the current date                           |
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Tab completes commands, ↑/↓ recall history, and the chips below the prompt run
+common commands on click.

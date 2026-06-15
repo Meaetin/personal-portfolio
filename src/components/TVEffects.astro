@@ -1,0 +1,78 @@
+---
+// Stacked full-screen CRT overlay layers. All pointer-events:none so they never
+// block interaction with the page underneath.
+---
+
+<div class="tv-effects">
+  <div class="tv-effect --static"></div>
+  <div class="tv-effect --vignette"></div>
+  <div class="tv-effect --crt"></div>
+</div>
+
+<style>
+  .tv-effects {
+    position: absolute;
+    inset: 0;
+    z-index: var(--layer-tv-effects);
+    pointer-events: none;
+  }
+
+  .tv-effect {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+
+  /* animated TV snow */
+  .--static {
+    background-image: url(/assets/images/static.gif);
+    background-size: cover;
+    opacity: 0.12;
+  }
+  body:is([data-channel="0"], :not([data-channel])) .--static {
+    opacity: 0.2;
+  }
+
+  /* darkened edges */
+  .--vignette {
+    background: radial-gradient(circle, transparent 60%, #000 100%), transparent;
+  }
+
+  /* scanline grid + a single bright line rolling down the screen */
+  .--crt::before,
+  .--crt::after {
+    content: "";
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    pointer-events: none;
+  }
+  .--crt::before {
+    height: 90px;
+    background: linear-gradient(180deg, transparent 0, #fffafa26 50%, transparent);
+    animation: vline 8s linear infinite;
+  }
+  .--crt::after {
+    height: 100%;
+    background-image: repeating-linear-gradient(
+      transparent,
+      transparent 6px,
+      rgba(255, 255, 255, 0.03) 6px,
+      rgba(255, 255, 255, 0.03) 12px
+    );
+  }
+
+  @keyframes vline {
+    0% {
+      transform: translateY(-100%);
+    }
+    80%,
+    to {
+      transform: translateY(100vh);
+    }
+  }
+</style>

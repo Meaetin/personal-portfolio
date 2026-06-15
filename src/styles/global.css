@@ -1,0 +1,328 @@
+/* ==========================================================================
+   Reset
+   ========================================================================== */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+p,
+ol,
+ul,
+li,
+figure,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0;
+  padding: 0;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-size: 100%;
+  font-weight: 400;
+}
+
+ul {
+  list-style: none;
+}
+
+img,
+video {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+button,
+input,
+select,
+textarea {
+  margin: 0;
+}
+
+/* ==========================================================================
+   Font
+   ========================================================================== */
+@font-face {
+  font-family: "VCR OSD Mono";
+  src:
+    url(/assets/fonts/VCROSDMono.woff2) format("woff2"),
+    url(/assets/fonts/VCROSDMono.woff) format("woff");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ==========================================================================
+   Design tokens
+   ========================================================================== */
+:root {
+  --text-primary: #a0a0a0;
+  --text-secondary: #fff;
+
+  --font-primary: "VCR OSD Mono", monospace;
+  --font-size-primary: clamp(16px, 1.8vw, 34px);
+  --font-size-secondary: clamp(24px, 4.6vw, 63px);
+  --line-height: 1.4;
+
+  /* z-index scale */
+  --layer-top: 55;
+  --layer-me-hover: 34;
+  --layer-content-hover: 21;
+  --layer-content: 13;
+  --layer-tv-effects: 8;
+  --layer-channels: 5;
+
+  /* chromatic-aberration ghost colors — the "3D text" */
+  --glitchy-blue: rgba(2, 183, 182, 0.4);
+  --glitchy-red: rgba(183, 2, 2, 0.4);
+
+  --container-width: 80%;
+  --gui-side: calc((100% - var(--container-width)) / 2);
+  --gui-bottom: 2.94117647059rem;
+}
+
+/* ==========================================================================
+   Base
+   ========================================================================== */
+html {
+  font-family: var(--font-primary);
+  font-weight: 400;
+  font-style: normal;
+  color: var(--text-primary);
+  font-size: var(--font-size-primary);
+  line-height: var(--line-height);
+}
+
+body {
+  background-color: #000;
+  overflow: hidden;
+  scroll-behavior: smooth;
+  text-rendering: optimizeSpeed;
+}
+
+html,
+body,
+.tv,
+.tv-screen,
+.tv-content {
+  height: 100%;
+}
+
+::selection {
+  background-color: #fff;
+  color: #000;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #28272a transparent;
+}
+*::-webkit-scrollbar {
+  width: 3px;
+}
+*::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+*::-webkit-scrollbar-thumb {
+  background-color: #28272a;
+}
+
+/* ==========================================================================
+   ⭐ The faux-3D text — chromatic aberration via double text-shadow
+   ========================================================================== */
+.glitchy-text {
+  --shadow-x-distance: 2px;
+  --shadow-y-distance: 1px;
+
+  text-shadow:
+    var(--shadow-x-distance) var(--shadow-y-distance) 0 var(--glitchy-blue),
+    calc(var(--shadow-x-distance) * -1) calc(var(--shadow-y-distance) * -1) 0
+      var(--glitchy-red);
+}
+
+@media (min-width: 481px) {
+  .glitchy-text {
+    --shadow-x-distance: 3px;
+    --shadow-y-distance: 2px;
+  }
+}
+
+@media (min-width: 960px) {
+  .glitchy-text {
+    --shadow-x-distance: 4px;
+    --shadow-y-distance: 3px;
+  }
+}
+
+/* ==========================================================================
+   Layout
+   ========================================================================== */
+.page-container {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  width: var(--container-width);
+  max-width: 100%;
+  min-height: 100vh;
+  margin: 0 auto;
+}
+
+/* ==========================================================================
+   Links + the rainbow-static reveal (TV colour bars + chromatic noise)
+   ========================================================================== */
+a,
+.button-text {
+  position: relative;
+  color: var(--text-secondary);
+  text-decoration: none;
+  cursor: pointer;
+
+  /* hard-edged TV colour bars under flickering per-pixel RGB static, swept in
+     from zero height on hover/focus — reads as a broken signal, not a smooth
+     rainbow. Animated GIF is generated from rainbow-static.svg (the source). */
+  background-image: url(/assets/images/rainbow-static.gif);
+  background-size: 90% 0;
+  background-position: center center;
+  background-repeat: no-repeat;
+  transition: background-size 0.2s cubic-bezier(0.29, 0.8, 0.21, 0.63);
+}
+
+/* freeze the static to a single frame for users who opt out of motion */
+@media (prefers-reduced-motion: reduce) {
+  a,
+  .button-text {
+    background-image: url(/assets/images/rainbow-static.svg);
+  }
+}
+
+a:hover,
+a:focus,
+.button-text:hover,
+.button-text:focus {
+  outline: none;
+  color: var(--text-secondary);
+  background-size: 100% 100%;
+}
+
+/* external links reveal their href as a tooltip above */
+a:is([href^="http"], [href^="mailto"])::after {
+  content: attr(href);
+  display: block;
+  position: absolute;
+  z-index: var(--layer-content-hover);
+  bottom: 100%;
+  left: 0;
+  margin-bottom: 0.5rem;
+  min-width: max-content;
+  padding: 0.2em 0.4em;
+  background-color: #000c;
+  font-size: 0.6rem;
+  color: var(--text-secondary);
+  visibility: hidden;
+  transition: none;
+}
+a:is([href^="http"], [href^="mailto"]):hover::after {
+  visibility: visible;
+  transition: visibility 0s 0.7s;
+}
+
+/* a <button> that behaves like inline text (the "Carioca" word) */
+.button-text {
+  appearance: none;
+  border: none;
+  padding: 0;
+  display: inline;
+  font: inherit;
+  color: var(--text-secondary);
+  background-color: transparent;
+  text-transform: inherit;
+  line-height: 0.9;
+}
+
+/* ==========================================================================
+   Power-on animation
+   ========================================================================== */
+body:not([data-tv-on]) .tv-screen {
+  animation:
+    turn-on-transform 0.4s,
+    turn-on-filter 1s;
+}
+
+@keyframes turn-on-transform {
+  0% {
+    transform: scaleY(0.6) translate(0) skew(2deg);
+  }
+  6% {
+    transform: scale(2) translateY(-20%) skew(2deg);
+  }
+  30% {
+    transform: scale(1) translateY(-20%) skew(-2deg);
+  }
+  50% {
+    transform: scaleY(0.8) translateY(40%) skew(-2deg);
+  }
+  to {
+    transform: scale(1) translate(0) skew(0);
+  }
+}
+
+@keyframes turn-on-filter {
+  0% {
+    filter: brightness(1) invert(1) saturate(1.2);
+  }
+  3% {
+    filter: brightness(4) invert(1) saturate(2);
+  }
+  15% {
+    filter: brightness(4) invert(0) saturate(2);
+  }
+  30%,
+  50% {
+    filter: brightness(10) invert(0) saturate(1);
+  }
+  70% {
+    filter: contrast(1) brightness(1) invert(0) saturate(1);
+  }
+}
+
+/* ==========================================================================
+   Terminal caret blink
+   ========================================================================== */
+@keyframes caret-blink {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+
+/* ==========================================================================
+   Reduced motion
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  body:not([data-tv-on]) .tv-screen {
+    animation: none;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
